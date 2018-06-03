@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>login</title>
+  <link rel="stylesheet" type="text/css" href="style/login.css">
+  <link rel="stylesheet" type="text/css" href="style/header.css">
+  <script type="text/javascript" src="angular.min.js"></script>
+
+</head>
+
+
+<body>
+
+    <div id="menylist">
+        <li><a href="/home.html">Home</a></li>
+        <li><a href="/signup.html">Sign Up</a></li>
+        <li><a href="/login.html">Login</a></li>
+    </div>
+
+<div class="loginForm">
+    <h2>LOGIN</h2>
+<form id="login-form">
+    <input class="box" type="text" id="username-input" placeholder="Username">
+    <br><br>
+    <input class="box" type="password" id="password-input" placeholder="Password">
+    <br><br>
+    <input class="login" type="submit" id="login button" value="Log in">
+
+</form>
+</div>
+
+  </body>
+</body>
+
+<div>
+    <IMG class="loginpic" SRC="pictures/login.jpg" ALT="noder" WIDTH=300 HEIGHT=300>
+</div>
+
+<div class="footer">
+  <p>This website is made by Tanja Kartz Johansen: Contact information: tj@civagaard.dk</p>
+</div>
+
+
+
+  <script>
+  //Javascript login
+  let loginForm = document.querySelector('#login-form')
+  let usernameField = document.querySelector('#username-input')
+  let passwordField = document.querySelector('#password-input')
+
+  loginForm.addEventListener('submit', log => {
+   log.preventDefault()
+
+   loginUser()
+ })
+
+  function loginUser() {
+
+   let options = {
+     method: 'post',
+     credentials: 'include',
+     headers: {
+       'content-type': 'application/json'
+     },
+     body: JSON.stringify({
+       username: usernameField.value,
+       password: passwordField.value
+     })
+   }
+
+   //fetching end point and getting response
+   fetch('/api/auth', options)
+   //return the promise that fetch returns
+   .then(response => response.json())
+   //return promise that validate status
+   .then(response => {
+    console.log("response: ", response);
+    if (response.status == 'OK') {
+      //and redirect user to new page
+      console.log('Welcome! Start making your list of favorite songs')
+      document.location.href = './index.html'
+    } else {
+     alert(response.message)
+   }
+ })
+ }
+</script>
+</html>

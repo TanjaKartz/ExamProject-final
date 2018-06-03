@@ -1,0 +1,49 @@
+
+#menylist {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333333;
+    border: 2px solid white;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: #111111;
+}
+
+.center {
+    text-align: center;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    list-style-type: none;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: small;
+    padding: 10;
+    overflow: hidden;
+    background-color: #333333;
+    border: 2px solid white;
+    text-align: center;
+    color: white;
+    font-family: georgia;
+}

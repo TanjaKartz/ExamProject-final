@@ -1,0 +1,44 @@
+h1 {
+    color: white;
+    background-size: 100% 100%;
+    font-family: georgia;
+    font-size: 90px;
+    font-weight: 600px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: lighter;
+    letter-spacing: 6px;
+}
+
+#music {
+    border: 2px solid white;
+    padding: 25px;
+    padding-bottom: 150px;
+    padding-top: 150px;
+    background: url(music.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+}
+
+.footerhome {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333333;
+    border: 2px solid white;
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    font-family: georgia;
+}
+
+h2 {
+    color: white;
+    text-transform: uppercase;
+    font-family: georgia;
+    font-size: 30px;
+    letter-spacing: 1px;
+    text-align: center;
+  }

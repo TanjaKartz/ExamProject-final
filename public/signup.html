@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>The sign up page</title>
+  <link rel="stylesheet" type="text/css" href="style/header.css">
+  <link rel="stylesheet" type="text/css" href="style/login.css">
+
+
+</head>
+
+<body>
+  <div id="menylist">
+    <li><a href="/home.html">Home</a></li>
+    <li><a href="/signup.html">Sign Up</a></li>
+    <li><a href="/login.html">Login</a></li>
+  </div>
+
+ <div class="loginForm">
+  <h2>Sign up here to get started</h2>
+<form id="signup-form">
+  <input class="box" type="text" id="usernameSignup-input" size="50" placeholder="Username">
+  <br><br>
+  <input class="box" type="password" id="passwordSignup-input" size="50" placeholder="Password">
+  <br><br>
+<!--  <input class="box" type="password" id="passwordSignup-input" size="50" placeholder="Confirm password">
+  <br><br> -->
+<input class="signup" type="submit" id="signup-button" value="send">
+  <!--<button  type="button" ng-click="submitSignup()">SIGN UP!</button>-->
+</div>
+
+  <div class="singer">
+    <img src="pictures/singers.png" alt="singer" width="600" height="400">
+  </div>
+
+
+
+  <script>
+    let signupForm = document.querySelector('#signup-form')
+    let usernameSignUpField = document.querySelector('#usernameSignup-input')
+    let passwordSignupField = document.querySelector('#passwordSignup-input')
+
+    signupForm.addEventListener('submit', sign => {
+      sign.preventDefault()
+
+      //calling register method here
+      registerUser()
+    })
+
+    function registerUser() {
+      //Set the options for the fetch() method
+      //parameters documentation: https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#
+      let options = {
+        method: 'post',
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: usernameSignUpField.value,
+          password: passwordSignupField.value
+        })
+      }
+
+      //fetching end point and getting response
+      //second parameter of fetch method (options): Allows control different settings.
+      //fetch method with 2 parameters: path to resource we want to fetch and init object options
+      fetch('/api/users', options)
+        //return the promise that fetch returns
+        .then(response => response.json())
+        //return promise that validate status
+        .then(response => {
+          if (response.status == 'OK') {
+            //and redirect user to new page
+            alert('User was created. Login and start making your playlist')
+            document.location.href = './login.html'
+          } else {
+            //or send error message
+            alert(response.message)
+          }
+        })
+    }
+  </script>
+
+
+
+</body>
+
+<div class="footer">
+  <p>This website is made by Tanja Kartz Johansen: Contact information: tj@civagaard.dk</p>
+</div>
+
+</html>

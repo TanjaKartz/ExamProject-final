@@ -1,0 +1,9 @@
+h2 {
+  color: black;
+  font-family: georgia;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 25px;
+  letter-spacing: 1px;
+  padding-top: 100px
+}
