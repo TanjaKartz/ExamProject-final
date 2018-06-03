@@ -72,7 +72,7 @@ function addUserToOnlineList(user) {
   };
   let schema = {
     username: Joi.string().alphanum().required(),
-    socketID: Joi.string().required()    
+    socketID: Joi.string().required()
   }
   const result = Joi.validate(userData, schema)
 
@@ -102,7 +102,7 @@ function addUserToOnlineList(user) {
       });
     }else {
      console.error("Adding online error: ", err);
-     return; 
+     return;
    }
  });
 }
@@ -127,7 +127,7 @@ function removeUserFromOnline(userSID) {
 // Stuff to do when a user (socket) connects to the site
 io.on("connection", socket => {
   // Gives the connected user their sessionID
-  socket.emit("sessionID", { "id": socket.id }); 
+  socket.emit("sessionID", { "id": socket.id });
 
   socket.on("updateOnline", userData => {
     console.log("User connected: ", userData);
@@ -200,8 +200,8 @@ app.get('/', (req, res) => {
     return res.redirect('./public/login.html')
   }
 
-  res.sendFile(__dirname + './public/home.html')
-  res.render('home', {
+  res.sendFile(__dirname + './public/index.html')
+  res.render('index', {
     title: 'Home Page'
   })
 })
@@ -219,14 +219,14 @@ app.get('/signup', (req, res) => {
   })
 })
 
-app.get('/home', userIsAuthenticated, (req, res) => {
-  res.render('home', {
+app.get('/index', userIsAuthenticated, (req, res) => {
+  res.render('index', {
   title: 'Home Page'
   })
 })
 
-app.get('/index', userIsAuthenticated, (req, res) => {
-  res.render('index', {
+app.get('/list', userIsAuthenticated, (req, res) => {
+  res.render('list', {
     title: 'My List'
   })
 })
@@ -466,20 +466,7 @@ app.get('/api/getlist/', userIsAuthenticated, (req, res) => {
     // console.log("itemsToReturn: ", itemsToReturn);
     res.json(itemsToReturn)
   })
-/*
-  // Include the List related to the items
-  let options = {
-    include: [{
-      model: db.List,
-      attributes: list.id // Only select list of the user
-    }]
-  }
 
-  db.Item.findAll(options)
-  .then(items => {
-    res.json(items)
-  })
-  */
 })
 
 app.get('/api/removeItem/:itemID', userIsAuthenticated, (req, res) => {
@@ -564,14 +551,4 @@ db.sequelize.sync({
       // Documentation: http://docs.sequelizejs.com/manual/tutorial/associations.html#creating-with-associations
     console.log('Database is ready and server is running..')
   })
-})
-
-
-
-app.delete('api/item/:item_id', (req, res) => {
-db.Item.delete({
-  where: {
-    id: req.params.item_id
-  }
-})
 })

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html ng-app="musicLibrary">
+<!--myList elements-->
+
+<head>
+  <title>Music Library</title>
+  <link rel="stylesheet" type="text/css" href="style/header.css">
+  <link rel="stylesheet" type="text/css" href="style/list.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+</head>
+
+<body>
+  <!--header elements-->
+
+  <div id="menylist">
+      <li><a href="/list.html">My List</a></li>
+      <li><a href="/findSongs.html">Find Songs</a></li>
+      <li><a href="/api/auth/logout">Logout</a></li>
+
+  </div>
+
+  <!--header elements-->
+
+  <!--myList elements-->
+<div id="mylist">
+    <h2> MY LIST </h2>
+
+    <!-- shopping list form -->
+     <form id="song-list">
+       <input class="inputBar" type="text" size="40" id="add-songs" value="" placeholder="Add a song" required>
+       <input class="add" type="submit" size="40" id="send-song" value="Add">
+     </form>
+
+    <!-- items list -->
+    <ul id="songList"></ul>
+
+</div>
+
+
+
+<div id="onlineUsersList">
+  <p>ONLINE USERS</p>
+  <ul id="usersList"></ul>
+</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+  <script>
+
+    getUserData();
+
+    //selecting form for list
+    let listForm = document.querySelector('#song-list')
+    let songInput = document.querySelector('#add-songs')
+    let listButton = document.querySelector('#send-song')
+
+    //adding eventListener for list
+    listForm.addEventListener('submit', list => {
+      list.preventDefault()
+      addItem()
+    })
+
+    let socket = io();
+    let sessionID = null;
+    let userID = null;
+    let userName = "";
+
+    function getUserData() {
+      let options = { credentials: 'include' };
+      fetch('/api/auth/getuser', options).then(response => {
+        // console.log("response: ", response);
+        if (response.ok === true) {
+          return response.json();
+        }else {
+          return {"Error": "Can't get user"};
+        }
+      }).then(user => {
+        console.log("user: ", user);
+        userID = user.id;
+        userName = user.username;
+      })
+    }
+
+    /* Call every time an user's online state change, and update the online users list */
+    function updateOnlineUsers() {
+      let options = { credentials: 'include' };
+      fetch('/api/getonline', options).then(response => {
+        // console.log("response: ", response);
+        if (response.ok === true) {
+          return response.json();
+        }else {
+          return {"Error": "Can't get items"};
+        }
+      }).then(items => {
+        // console.log("Items: ", items);
+        //selecting where item should be added in lists
+        let listItem = document.querySelector('#usersList');
+        listItem.innerHTML = "";
+        if (items.length > 0) {
+          items.forEach(item => {
+            //creating a new element
+            let newItem = document.createElement('li')
+            //adding input value to new element
+            newItem.innerHTML = item.username;
+            newItem.className = 'newitem';
+            //appending value to list
+            listItem.appendChild(newItem)
+          });
+        }
+      })
+    }
+
+    // Update online users at startup, then every second
+    updateOnlineUsers();
+    setInterval( updateOnlineUsers , 1000);
+
+
+    // Update online status if user data is available, otherwise wait and retry
+    function waitForUserData() {
+      if (sessionID && userName && userID) {
+        console.log("Updating online status");
+        socket.emit("updateOnline", {
+          uniqueID: userID,
+          name: userName,
+          socketID: sessionID
+        });
+      }else {
+       setTimeout( waitForUserData , 1000);
+      }
+    }
+
+    // When the user logs in, the server sends the sessionID and user data when ready
+    socket.on("sessionID", session => {
+      console.log("Session: ", session);
+      if (session.id) {
+        sessionID = session.id;
+        console.log("sessionID: ", sessionID);
+        waitForUserData();
+      }else{
+        console.log("Error: Could not retrive sessionID");
+      }
+    });
+
+  //get all items for the specific list
+  //function to display songs in list
+  function getList() {
+    let options = { credentials: 'include' };
+    fetch('/api/getlist', options).then(response => {
+      // console.log("response: ", response);
+      if (response.ok === true) {
+        return response.json();
+      }else {
+        return {"Error": "Can't get items"};
+      }
+    }).then(items => {
+      // console.log("Items: ", items);
+      //selecting where item should be added in lists
+      let listItem = document.querySelector('#songList');
+      listItem.innerHTML = "";
+      if (items.length > 0) {
+        items.forEach(item => {
+          //creating a new element
+          let newItem = document.createElement('p')
+          let removeButton = document.createElement('span')
+          removeButton.innerHTML = "X";
+          removeButton.className = 'removeButton';
+          removeButton.id = item.id
+
+          //adding input value to new element
+          newItem.innerHTML = item.titleArtist;
+          // newItem.id = item.id
+          newItem.className = 'newitem';
+          newItem.appendChild(removeButton);
+          //appending value to list
+          listItem.appendChild(newItem)
+        });
+      }
+    })
+  }
+
+  // Removes the clicked item from the database
+  function removeItem(item) {
+    let options = { credentials: 'include' };
+    fetch('/api/removeItem/' + item, options)
+    .then(response => {
+      // console.log(response)
+      return response.json();
+    }).then(responseJSON => {
+      if (responseJSON.status == 200) {
+        // console.log(responseJSON.message)
+        getList();
+      } else {
+        console.log(responseJSON.message)
+      }
+    })
+  }
+  //function to post item in API-database
+  function addItem(items) {
+    //Set the options for the fetch() method
+    //parameters documentation: https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#
+    let options = {
+      method: 'post', //post because we have to send song in input
+      credentials: 'include',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        titleArtist: songInput.value
+      })
+    }
+    //fetching end point and getting response
+    //second parameter of fetch method (options): Allows control different settings.
+    //fetch method with 2 parameters: path to resource we want to fetch and init object options
+    fetch('/api/list', options)
+        //return the promise that fetch returns
+        .then(response => response.json())
+        //return promise that validate status
+        .then(responseJSON => {
+              if (responseJSON.status == 'OK') {
+              console.log('song is added')
+              //calling frontend function
+              getList()
+
+              } else {
+              //or send error message
+              alert(responseJSON.message)
+            }
+        })
+  }
+
+  // Get list of user's songs when page is opened
+  getList();
+
+  // Add click event listener for items
+  document.addEventListener('click',function(e){
+    if(e.target && e.target.className === 'removeButton') {
+      let itemID = e.target.id;
+      console.log("Removing item with ID: ", itemID);
+      removeItem(itemID);
+    }
+  })
+
+  </script>
+
+</body>
+
+<div class="footer">
+  <p>This website is made by Tanja Kartz Johansen: Contact information: tj@civagaard.dk</p>
+</div>
+</html>
