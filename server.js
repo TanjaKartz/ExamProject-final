@@ -1,5 +1,5 @@
 //This is backend stuff (node module and server.js is both backend)
-//not to self: Remember that I need to somehow(!!!!) implement socket.io, which allows for real-time to happen
+
 
 // Load Express framework module
 const express = require('express')
@@ -50,11 +50,10 @@ const userIsAuthenticated = (req, res, next) => {
 }
 
 
-/////////////REAL TIME FEATURE NEEDS TO BE IMPLEMENTED/////////////////
+/////////////REAL TIME FEATURE /////////////////
 // Load Socket.io to support real-time features
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-// Share sessions between Express and Socket.io
 
 const ioSession = require('express-socket.io-session')
 // Setup session sharing between Express and Socket.io
@@ -141,49 +140,6 @@ io.on("connection", socket => {
   });
 });
 
-
-// io.on('connection', socket => {
-//   console.log('Socket connected', socket.id)
-//   socket.emit('debug message', 'Socket connected to server!')
-
-// })
-/*
-  // Take the user object from the session
-  // It contains the user's ID and username
-  let {
-    user
-  } = socket.handshake.session
-
-  // When a user closes the site
-  // and therefore disconnects
-  socket.on('disconnect', () => {
-    // Check if the user is logged in
-    if (user) {
-      // Remove the users from the onlineUsers array
-      onlineUsers = onlineUsers.filter(u => u.id !== user.id)
-
-      // Emit the new list of online users
-      io.emit('online users', onlineUsers)
-    }
-  })
-
-  // If the user is logged in
-  if (user) {
-    // Check if the user is already on the list
-    // Could happen if the user uses multiple browsers
-    if (!onlineUsers.some(u => u.id == user.id)) {
-      // If user is not on the list, add the user
-      onlineUsers.push(user)
-
-      // Attach the user to the socket
-      socket.user = user
-    }
-  }
-
-  io.emit('online users', onlineUsers)
-
-})
-*/
 
 ////////////////////////////////////////////////////////
 

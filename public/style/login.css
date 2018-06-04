@@ -8,6 +8,11 @@
   padding-bottom: 10px;
 }
 
+body {
+   background-image: url(plant3.jpg);
+   background-size: 100% 200%;
+}
+
 h2 {
   color: black;
   font-family: georgia;
